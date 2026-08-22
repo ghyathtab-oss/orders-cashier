@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>عداد الطلبات | كشف حساب المتاجر</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <button class="icon-btn" id="settingsBtn" aria-label="الإعدادات" title="الإعدادات">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Zm8.1-2.3-1.6-.9c.05-.42.05-.84 0-1.26l1.6-.92a1 1 0 0 0 .37-1.36l-1.6-2.76a1 1 0 0 0-1.36-.37l-1.6.93a7.8 7.8 0 0 0-1.1-.64V4a1 1 0 0 0-1-1h-3.2a1 1 0 0 0-1 1v1.85a8 8 0 0 0-1.1.64l-1.6-.93A1 1 0 0 0 4.55 6L2.95 8.76a1 1 0 0 0 .37 1.36l1.6.92a7 7 0 0 0 0 1.26l-1.6.9a1 1 0 0 0-.37 1.37l1.6 2.77a1 1 0 0 0 1.36.36l1.6-.92c.35.25.72.47 1.1.64V20a1 1 0 0 0 1 1h3.2a1 1 0 0 0 1-1v-1.85c.39-.18.76-.4 1.1-.65l1.6.93a1 1 0 0 0 1.36-.37l1.6-2.76a1 1 0 0 0-.37-1.37Z"/></svg>
+      </button>
+
+      <button class="store-pill" id="storePickerBtn" aria-label="اختيار المتجر">
+        <span class="store-dot" id="storeDot"></span>
+        <span class="store-meta">
+          <small>المتجر الحالي</small>
+          <strong id="storeName">مسلم</strong>
+        </span>
+        <svg class="chev" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg>
+      </button>
+
+      <button class="icon-btn" id="historyBtn" aria-label="السجل" title="السجل">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5l3 2M3.05 11A9 9 0 1 0 5.64 5.64L3 8.28M3 4v4h4"/></svg>
+      </button>
+    </header>
+
+    <section class="hero-card">
+      <div>
+        <span class="eyebrow">الطلبات المنفذة</span>
+        <div class="hero-number" id="grandCount">0</div>
+        <span class="hero-caption" id="todayLabel">اليوم</span>
+      </div>
+      <div class="hero-stats">
+        <div class="mini-stat">
+          <span>أصناف نشطة</span>
+          <strong id="activeProducts">0</strong>
+        </div>
+        <div class="mini-stat" id="salesStat">
+          <span>قيمة المسعّر</span>
+          <strong id="grandSales">0</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-head">
+      <div>
+        <span class="eyebrow">لوحة العد</span>
+        <h1>اضغط + مع كل طلب منفذ</h1>
+      </div>
+      <button class="ghost-btn" id="addProductBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        منتج
+      </button>
+    </section>
+
+    <section class="products-grid" id="productsGrid"></section>
+
+    <section class="empty-state hidden" id="emptyState">
+      <div class="empty-icon">＋</div>
+      <h2>لا توجد منتجات بعد</h2>
+      <p>أضف أول منتج ثم استخدم + و − لتسجيل الطلبات المنفذة.</p>
+      <button class="primary-btn" id="emptyAddBtn">إضافة منتج</button>
+    </section>
+
+    <div class="bottom-spacer"></div>
+  </main>
+
+  <nav class="bottom-bar">
+    <div class="bar-summary">
+      <span><b id="bottomCount">0</b> طلب</span>
+      <small id="bottomSales">لا توجد أسعار</small>
+    </div>
+    <button class="report-btn" id="reportBtn">
+      <span>إصدار الكشف</span>
+      <svg viewBox="0 0 24 24"><path d="M8 5h8M8 9h8M8 13h5M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/></svg>
+    </button>
+  </nav>
+
+  <div class="sheet-backdrop hidden" id="sheetBackdrop"></div>
+
+  <section class="sheet hidden" id="storeSheet" aria-modal="true" role="dialog">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-row">
+      <div>
+        <span class="eyebrow">القوالب</span>
+        <h2>اختر المتجر</h2>
+      </div>
+      <button class="icon-btn close-sheet" data-close="storeSheet" aria-label="إغلاق">×</button>
+    </div>
+    <div class="store-list" id="storeList"></div>
+  </section>
+
+  <section class="sheet hidden" id="productSheet" aria-modal="true" role="dialog">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-row">
+      <div>
+        <span class="eyebrow" id="productFormEyebrow">منتج جديد</span>
+        <h2 id="productFormTitle">إضافة منتج</h2>
+      </div>
+      <button class="icon-btn close-sheet" data-close="productSheet" aria-label="إغلاق">×</button>
+    </div>
+    <form id="productForm" class="form-stack">
+      <input type="hidden" id="editingProductId" />
+      <label>
+        <span>اسم المنتج <b>*</b></span>
+        <input id="productNameInput" required maxlength="40" placeholder="مثال: iTunes 10$" autocomplete="off" />
+      </label>
+      <div class="form-row">
+        <label>
+          <span>السعر <em>اختياري</em></span>
+          <input id="productPriceInput" type="number" inputmode="decimal" min="0" step="0.01" placeholder="بدون سعر" />
+        </label>
+        <label>
+          <span>اختصار</span>
+          <input id="productIconInput" maxlength="3" placeholder="IT" autocomplete="off" />
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="danger-btn hidden" type="button" id="deleteProductBtn">حذف المنتج</button>
+        <button class="primary-btn" type="submit" id="saveProductBtn">حفظ المنتج</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="sheet sheet-tall hidden" id="settingsSheet" aria-modal="true" role="dialog">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-row">
+      <div>
+        <span class="eyebrow">التخصيص</span>
+        <h2>إعدادات المتجر</h2>
+      </div>
+      <button class="icon-btn close-sheet" data-close="settingsSheet" aria-label="إغلاق">×</button>
+    </div>
+    <form id="settingsForm" class="form-stack">
+      <label>
+        <span>اسم المتجر</span>
+        <input id="settingsStoreName" maxlength="30" />
+      </label>
+      <label>
+        <span>عنوان الكشف</span>
+        <input id="settingsReportTitle" maxlength="45" placeholder="كشف حساب الطلبات المنفذة" />
+      </label>
+      <div class="form-row">
+        <label>
+          <span>العملة</span>
+          <input id="settingsCurrency" maxlength="8" placeholder="ر.س" />
+        </label>
+        <label>
+          <span>لون الهوية</span>
+          <input id="settingsColor" type="color" />
+        </label>
+      </div>
+      <label>
+        <span>ملاحظة أسفل الكشف <em>اختياري</em></span>
+        <input id="settingsFooter" maxlength="70" placeholder="تم إنشاء هذا الكشف بنهاية الوردية" />
+      </label>
+      <label class="toggle-row">
+        <span>
+          <strong>إظهار الأسعار في الواجهة</strong>
+          <small>يمكن إخفاؤها مع بقاء الحساب فعالًا</small>
+        </span>
+        <input id="settingsShowPrices" type="checkbox" />
+      </label>
+      <button class="primary-btn" type="submit">حفظ الإعدادات</button>
+      <button class="secondary-btn" type="button" id="resetShiftBtn">حفظ الوردية وتصفير العدادات</button>
+    </form>
+  </section>
+
+  <section class="sheet sheet-tall hidden" id="historySheet" aria-modal="true" role="dialog">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-row">
+      <div>
+        <span class="eyebrow">الأرشيف المحلي</span>
+        <h2>الكشوف السابقة</h2>
+      </div>
+      <button class="icon-btn close-sheet" data-close="historySheet" aria-label="إغلاق">×</button>
+    </div>
+    <div id="historyList" class="history-list"></div>
+  </section>
+
+  <section class="sheet sheet-full hidden" id="reportSheet" aria-modal="true" role="dialog">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-row report-sheet-head">
+      <div>
+        <span class="eyebrow">جاهز للتصدير</span>
+        <h2>معاينة الكشف</h2>
+      </div>
+      <button class="icon-btn close-sheet" data-close="reportSheet" aria-label="إغلاق">×</button>
+    </div>
+
+    <div class="report-preview-wrap">
+      <article class="report-preview" id="reportPreview">
+        <div class="report-brand-line"></div>
+        <header class="report-header">
+          <div class="report-logo" id="reportLogo">م</div>
+          <div>
+            <span class="report-kicker">DIGITAL ORDERS</span>
+            <h2 id="reportStoreName">مسلم</h2>
+            <p id="reportTitle">كشف حساب الطلبات المنفذة</p>
+          </div>
+        </header>
+        <div class="report-date-row">
+          <span id="reportDate">—</span>
+          <span id="reportTime">—</span>
+        </div>
+        <div class="report-table" id="reportRows"></div>
+        <div class="report-totals">
+          <div><span>إجمالي الطلبات</span><strong id="reportTotalCount">0</strong></div>
+          <div id="reportSalesTotalRow"><span>إجمالي القيمة</span><strong id="reportTotalSales">0</strong></div>
+        </div>
+        <p class="report-price-note hidden" id="reportPriceNote">* الإجمالي المالي يشمل المنتجات المسعّرة فقط.</p>
+        <footer id="reportFooter">تم إنشاء هذا الكشف بنهاية الوردية</footer>
+      </article>
+    </div>
+
+    <div class="report-actions">
+      <button class="secondary-btn" id="shareReportBtn">
+        <svg viewBox="0 0 24 24"><path d="M18 8a3 3 0 1 0-2.83-4A3 3 0 0 0 18 8ZM6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm12 1a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM8.6 16.5l6.8-4M8.6 19.5l6.8 0M8.7 14.3l6.6-7.1"/></svg>
+        مشاركة
+      </button>
+      <button class="primary-btn" id="downloadReportBtn">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+        حفظ PNG
+      </button>
+    </div>
+  </section>
+
+  <div class="confirm-dialog hidden" id="confirmDialog" role="dialog" aria-modal="true">
+    <div class="confirm-card">
+      <div class="confirm-icon">!</div>
+      <h3 id="confirmTitle">تأكيد</h3>
+      <p id="confirmText">هل أنت متأكد؟</p>
+      <div class="confirm-actions">
+        <button class="secondary-btn" id="confirmCancel">إلغاء</button>
+        <button class="danger-btn" id="confirmOk">تأكيد</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <canvas id="exportCanvas" class="hidden" width="1080" height="1350"></canvas>
+  <script src="app.js"></script>
+</body>
+</html>
